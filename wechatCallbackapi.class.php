@@ -1,7 +1,7 @@
 <?
 define("TOKEN", "weixin");
 require_once "./user.class.php";
-//require_once "./test.class.php";
+
 class wechatCallbackapi
 {
 	private $oneUser = null;
@@ -11,9 +11,7 @@ class wechatCallbackapi
      * 
      */
     public function __construct(){
-        //include "./user.class.php";
-	$this->oneUser = new user();
-	//$this->oneUser = new test();
+	    $this->oneUser = new user();
     }
 
     public function valid()
@@ -93,89 +91,77 @@ class wechatCallbackapi
                 switch ($object->EventKey)
                 {
                     case "company":
-                        $contentStr[] = array("Title" =>"公司简介", 
-                        "Description" =>"方倍工作室提供移动互联网相关的产品及服务", 
-                        "PicUrl" =>"http://discuz.comli.com/weixin/weather/icon/cartoon.jpg", 
-                        "Url" =>"weixin://addfriend/pondbaystudio");
+                        $contentStr[] = array("Title" =>"你好同学",
+                        "Description" =>"微信匿名社交平台",
+                        "PicUrl" =>"...",
+                        "Url" =>"...");
                         break;
-                    case "近期讲座":
-                        $contentStr[] = array("Title" =>"近期讲座", 
-                        "Description" =>"近期讲座", 
-                        "PicUrl" =>"http://discuz.comli.com/weixin/weather/icon/cartoon.jpg", 
-                        "Url" =>"http://1.mywebtest123.sinaapp.com/web/jiangzuoxin.html");
-                        break;                
+
                     case "start":
-			//$contentStr = $object->FromUserName;
-	  		//break;
+			            //$contentStr = $object->FromUserName;
+	  		            //break;
                     	//var_dump ( $this->oneUser->checkUserReg2($object->FromUserName) );
-			$rst = $this->oneUser->checkUserReg2($object->FromUserName) ;
-			//$contentStr = $rst['code'];
-			//break;
+			            $rst = $this->oneUser->checkUserReg2($object->FromUserName) ;
+			            //$contentStr = $rst['code'];
+			            //break;
                     	if( $rst['code']==1001 ){
                     		//未注册，需要先注册填写信息
                     		$contentStr = $rst['message'];
-                    		$contentStr .= "填写地址=》";
-                    		$contentStr .= "<a href=\"http://www.yzywnet.com/HiGirl/form.php?OpenID=".$object->FromUserName."\">绑定您的信息</a>";
+                    		$contentStr .= "<br>填写地址：";
+                    		$contentStr .= "<a href=\"http://www.yzywnet.com/HiGirl/form.php?OpenID=".$object->FromUserName."\">注册您的信息</a>";
                     		break;
                     	}else {
                     		//已经注册，接着判断队列状态是否在 聊天队列。
                     		if($rst['data']['queueStatus'] == 3){
-                    			$contentStr = "已经在聊天队列，若要重新匹配，请先断开此次连接";
+                    			$contentStr = "【系统提示】<br>同学，你已经在聊天队列，若要重新匹配，请先断开此次连接！";
                     			break;
                     		}else {
                     			//发起匹配
-					//$contentStr = $rst['data']['OpenID'];
-					//$contentStr .= $rst['data']['sex'];
+					            //$contentStr = $rst['data']['OpenID'];
+					            //$contentStr .= $rst['data']['sex'];
                     			$rst = $this->oneUser->matchObject( $rst['data']['OpenID'],$rst['data']['sex'] );
                     			if($rst['code'] == 1002){
-						$contentStr = $rst['message'];
-						break;
-					}else{
-						$contentStr = $rst['message'];break;
-					}
+                                    $contentStr = $rst['message'];
+                                    break;
+                                }else{
+                                    $contentStr = $rst['message'];break;
+                                }
                     		}
                     	}
-			//$contentStr = $rst;
-			//$contentStr = "开始匹配操作中。。。";
-                        //break;    
+                        //$contentStr = $rst;
+                        //$contentStr = "开始匹配操作中。。。";
+                                    //break;
                     case "end":
                         $rst = $this->oneUser->checkUserReg2($object->FromUserName) ;                      
                         if( $rst['code']==1001 ){
                                 //未注册，需要先注册填写信息
                                 $contentStr = $rst['message'];
-                                $contentStr .= "填写地址=》";
-                                $contentStr .= "<a href=\"http://www.yzywnet.com/HiGirl/form.php?OpenID=".$object->FromUserName."\">绑定您的信息</a>";
+                                $contentStr .= "<br>填写地址：";
+                                $contentStr .= "<a href=\"http://www.yzywnet.com/HiGirl/form.php?OpenID=".$object->FromUserName."\">注册您的信息</a>";
                                 break;
                         }else {
                                 //已经注册，接着判断队列状态是否在 聊天队列。
                                 if($rst['data']['queueStatus'] == 3){
-                                        $contentStr = "相遇是缘分，同学你确定要这样吗?"."<a href=\"http://www.yzywnet.com/HiGirl/disconnectObject.php?OpenID=".$object->FromUserName."\">残忍断开</a>";
+                                        $contentStr = "【系统提示】<br>相遇是缘分，同学你确定要这样吗?"."<a href=\"http://www.yzywnet.com/HiGirl/disconnectObject.php?OpenID=".$object->FromUserName."\">残忍断开</a>";
                                         break;
                                 }else {
-                                	$contentStr = "同学，你都还没开始聊天呢，怎么能断开连接呢。请先发起匿名聊天。";break;
+                                	$contentStr = "【系统提示】<br>同学，你都还没开始聊天呢，怎么能断开连接呢。请先发起匿名聊天。";break;
                                 }
                         }
+                        //$contentStr = $this->oneUser->test();
+                        //$contentStr = "断开匹配操作中。。。";
+                                    //break;
 
-			//$contentStr = $this->oneUser->test();
-			//$contentStr = "断开匹配操作中。。。";
-                        //break;
-		   case 'date':
-			$contentStr = $this->oneUser->sendMsg($fromUsername, 'text', $content);
-                        if($contentStr != 0){
-                                $resultStr = $this->transmitText($object, $contentStr, $funcFlag);
-                                return $resultStr;
-                        }
-			break;                        
                     default:
-                        $contentStr[] = array("Title" =>"默认菜单回复bychokingwin", 
-                        "Description" =>"这里是北理珠计算机就业指导中心", 
-                        "PicUrl" =>"http://discuz.comli.com/weixin/weather/icon/cartoon.jpg", 
-                        "Url" =>"weixin://addfriend/pondbaystudio");
+                        $contentStr[] = array("Title" =>"你好同学",
+                            "Description" =>"微信匿名社交平台",
+                            "PicUrl" =>"...",
+                            "Url" =>"...");
                         break;
                 }
                 break;
             
-            case "scancode_waitmsg":
+            /*case "scancode_waitmsg":
                 switch ($object->EventKey)
                 {
                     case '扫码签到':
@@ -203,9 +189,8 @@ class wechatCallbackapi
     				
                         break;
                 }
-                break;
+                break;*/
 
-            
             default:
                 break;      
 

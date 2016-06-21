@@ -24,9 +24,9 @@
     
 
 <?
-echo $_POST['学校年级专业'];
+/*echo $_POST['学校年级专业'];
 echo $_POST['性别'];
-echo $_POST['OpenID'];
+echo $_POST['OpenID'];*/
 
 
 if( $_POST['学校年级专业'] && $_POST['性别'] && $_POST['OpenID'] ){
@@ -36,7 +36,7 @@ if( $_POST['学校年级专业'] && $_POST['性别'] && $_POST['OpenID'] ){
     $OpenID = $_POST['OpenID'];
 
 }else{
-    echo "<br/><div class=\"alert alert-danger\" role=\"alert\">什么鬼，绑定出错了 /(ㄒoㄒ)/~~</div><br/>";
+    echo "<br/><div class=\"alert alert-danger\" role=\"alert\">什么鬼，注册出错了 /(ㄒoㄒ)/~~</div><br/>";
     if(empty($_POST['学校年级专业'])) {
         echo "<h4>学校年级专业有误，请返回重新填写</h4><br>";
     
@@ -66,18 +66,23 @@ if($result){
     echo "<br/><div class=\"alert alert-info\" role=\"alert\">n(*≧▽≦*)n</div><br/>";
     echo '<h4>同学，你已经注册过了。请忽略此次注册</h4>';
 }else {
-    $sql2 = "insert into userInfo(school,sex,OpenID) values('$schoolGrade','$sex','$OpenID')";
+    if($sex == '男'){
+        $sql2 = "insert into userInfo(school,sex,OpenID,queueStatus) values('$schoolGrade','$sex','$OpenID',1)";
+    }else{
+        $sql2 = "insert into userInfo(school,sex,OpenID,queueStatus) values('$schoolGrade','$sex','$OpenID',2)";
+    }
+
     $rs = mysql_query($sql2,$conn);
  
     if($rs)
     {
         echo "<br/><div class=\"alert alert-success\" role=\"alert\">n(*≧▽≦*)n</div><br/>";
-        echo '<h4>绑定成功 </h4>';
+        echo '<h4>注册成功 </h4>';
     }
     else 
     {
         echo "<br/><div class=\"alert alert-danger\" role=\"alert\">什么鬼，绑定出错了 /(ㄒoㄒ)/~~</div><br/>";
-        echo '<h4>绑定失败了.</h4><br><h4>客官回去填写信息，再提交一次吧...</h4><br>';
+        echo '<h4>注册失败了.</h4><br><h4>同学回去填写信息，再提交一次吧...</h4><br>';
         echo mysql_error();
     }        
 

@@ -246,7 +246,7 @@ class user {
 		 	        );
 			return $this->getArr('1000','已注册，顺利获取到用户信息',$arr);
 		}else {
-			return $this->getArr('1001','系统提示：同学你还未注册，请先完善基本信息,才能开始匿名聊天哦');
+			return $this->getArr('1001','【系统提示】<br>同学你还未注册，请先完善基本信息,才能开始匿名聊天哦！');
 		}
 	}
 

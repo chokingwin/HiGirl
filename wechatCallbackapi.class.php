@@ -67,7 +67,7 @@ class wechatCallbackapi
                     $resultStr = $this->receiveVoice($postObj);
                     break;
                 default:
-                    $resultStr = "";
+                    $resultStr = "【系统提示】<br>此类型消息不支持。仅支持文字、图片、语音 等消息类型";
                     break;
             }
             echo $resultStr;
@@ -161,36 +161,6 @@ class wechatCallbackapi
                 }
                 break;
 
-            /*case "scancode_waitmsg":
-                switch ($object->EventKey)
-                {
-                    case '扫码签到':
-
-                        //注意这里是$object->ScanCodeInfo->ScanResult ，不是$object->ScanResult
-                        $scanResult = $object->ScanCodeInfo->ScanResult;
-                        
-                        //判断扫码结果是否为长度18的字符串
-                        $length = strlen($scanResult);
-                    	
-                    	$contentStr = $length;
-                    
-                        if( $length == 85)
-                        {
-                            $url = "http://1.zhbitjsjjyfw.sinaapp.com/QRcode/linkqd3.php?QDresult=".$scanResult."&OpenID=".$object->FromUserName;
-                            $result = $this->https_request($url, null);
-                            
-                            if($result != null)
-                                $contentStr = $result;
-                            else 
-                                $contentStr = "nothing";
-                        }
-                        else
-                            $contentStr = "同学，扫错二维码了吧，我们可没这个二维码哦！！";
-    				
-                        break;
-                }
-                break;*/
-
             default:
                 break;
 
@@ -210,8 +180,8 @@ class wechatCallbackapi
         if ($rst['code'] == 1001) {
             //未注册，需要先注册填写信息
             $contentStr = $rst['message'];
-            $contentStr .= "填写地址=》";
-            $contentStr .= "<a href=\"http://www.yzywnet.com/HiGirl/form.php?OpenID=" . $object->FromUserName . "\">绑定您的信息</a>";
+            $contentStr .= "<br>填写地址：";
+            $contentStr .= "<a href=\"http://www.yzywnet.com/HiGirl/form.php?OpenID=" . $object->FromUserName . "\">注册您的信息</a>";
             $resultStr = $this->transmitText($object, $contentStr);
             return $resultStr;
         } else {
@@ -227,7 +197,7 @@ class wechatCallbackapi
                     return $resultStr;
                 }
             } else {
-                $contentStr = "同学，先匹配，再开始聊天。";
+                $contentStr = "【系统提示】<br>同学，先匹配，再开始聊天。";
                 $resultStr = $this->transmitText($object, $contentStr);
                 return $resultStr;
 
@@ -235,39 +205,6 @@ class wechatCallbackapi
         }
     }
 
-    private function receiveText2($object)
-    {
-        $fromUsername = $object->FromUserName;
-        $toUsername = $object->ToUserName;
-        $funcFlag = 0;
-        $keyword = explode(" ", $object->Content);
-        switch ($keyword[0]) {
-
-            case '投票';
-                $contentStr = "<a href=\"http://form.mikecrm.com/5TuQiU\">==>投票快戳我！！</a>";
-                break;
-            case '绑定':
-                $contentStr = "<a href=\"http://1.zhbitjsjjyfw.sinaapp.com/form/content.php?OpenID=" . $object->FromUserName . "\">绑定您的信息</a>";
-                break;
-            case '报名':
-                $contentStr = "<a href=\"http://form.mikecrm.com/f.php?t=n8t2tS\">==>报名快戳我！！</a>";
-                break;
-            case 'QDCX':
-                $url = "http://1.zhbitjsjjyfw.sinaapp.com/qjcx.php?Stu_num=" . $keyword[1];
-                $contentStr = $this->https_request($url, null);
-                break;
-            case 'qdcx':
-                $url = "http://1.zhbitjsjjyfw.sinaapp.com/qjcx.php?Stu_num=" . $keyword[1];
-                $contentStr = $this->https_request($url, null);
-                break;
-            default:
-                $contentStr = "您发的关键词我们还没添加呢，我们会尽快处理您的信息。。";
-                break;
-        }
-
-        $resultStr = $this->transmitText($object, $contentStr, $funcFlag);
-        return $resultStr;
-    }
 
     private function receiveImage($object)
     {
@@ -275,8 +212,8 @@ class wechatCallbackapi
         if ($rst['code'] == 1001) {
             //未注册，需要先注册填写信息
             $contentStr = $rst['message'];
-            $contentStr .= "填写地址=》";
-            $contentStr .= "<a href=\"http://www.yzywnet.com/HiGirl/form.php?OpenID=" . $object->FromUserName . "\">绑定您的信息</a>";
+            $contentStr .= "<br>填写地址：";
+            $contentStr .= "<a href=\"http://www.yzywnet.com/HiGirl/form.php?OpenID=" . $object->FromUserName . "\">注册您的信息</a>";
             $resultStr = $this->transmitText($object, $contentStr);
             return $resultStr;
         } else {
@@ -285,16 +222,15 @@ class wechatCallbackapi
                 $fromUsername = $object->FromUserName;
                 $toUsername = $object->ToUserName;
                 $funcFlag = 0;
-                $content = $object->MediaId;
-                $contentStr = $this->oneUser->sendMsg($fromUsername, 'voice', $content);
+                $MediaId = $object->MediaId;
+                $contentStr = $this->oneUser->sendMsg($fromUsername, 'image', $MediaId);
                 if ($contentStr != 0) {
                     $resultStr = $this->transmitText($object, $contentStr, $funcFlag);
                     return $resultStr;
                 }
             } else {
-                $contentStr = "同学，先匹配，再开始聊天。";
-                $funcFlag = 0;
-                $resultStr = $this->transmitText($object, $contentStr, $funcFlag);
+                $contentStr = "【系统提示】<br>同学，先匹配，再开始聊天。";
+                $resultStr = $this->transmitText($object, $contentStr);
                 return $resultStr;
 
             }
@@ -303,7 +239,33 @@ class wechatCallbackapi
 
     private function receiveVoice($object)
     {
+        $rst = $this->oneUser->checkUserReg2($object->FromUserName);
+        if ($rst['code'] == 1001) {
+            //未注册，需要先注册填写信息
+            $contentStr = $rst['message'];
+            $contentStr .= "<br>填写地址：";
+            $contentStr .= "<a href=\"http://www.yzywnet.com/HiGirl/form.php?OpenID=" . $object->FromUserName . "\">注册您的信息</a>";
+            $resultStr = $this->transmitText($object, $contentStr);
+            return $resultStr;
+        } else {
+            //已经注册，接着判断队列状态是否在 聊天队列。
+            if ($rst['data']['queueStatus'] == 3) {
+                $fromUsername = $object->FromUserName;
+                $toUsername = $object->ToUserName;
+                $funcFlag = 0;
+                $MediaId = $object->MediaId;
+                $contentStr = $this->oneUser->sendMsg($fromUsername, 'voice', $MediaId);
+                if ($contentStr != 0) {
+                    $resultStr = $this->transmitText($object, $contentStr, $funcFlag);
+                    return $resultStr;
+                }
+            } else {
+                $contentStr = "【系统提示】<br>同学，先匹配，再开始聊天。";
+                $resultStr = $this->transmitText($object, $contentStr);
+                return $resultStr;
 
+            }
+        }
     }
 
 

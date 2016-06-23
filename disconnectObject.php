@@ -3,9 +3,8 @@ require_once "jssdk.php";
 //这里的AppID 和 AppSecret 来自 晨膳房
 $jssdk = new JSSDK("wx56acbf511aa96be5", "25d92ea2c176471b3b287a17c6537d56");
 $signPackage = $jssdk->GetSignPackage();
-?>
-<?
-/*require_once "./redis2.class.php";
+
+require_once "./redis2.class.php";
 require_once "./user.class.php";
 
 $OpenID = $_GET['OpenID'];
@@ -46,7 +45,7 @@ if ($sex2 == '男') {
 } else {
     $redis->lpush('femaleActive', $objectOpenID);
     $redis->hset('user' . $objectOpenID, 'queueStatus', 2);
-}*/
+}
 //}
 
 ?>

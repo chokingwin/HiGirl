@@ -1,3 +1,9 @@
+<?php
+require_once "jssdk.php";
+//这里的AppID 和 AppSecret 来自 晨膳房
+$jssdk = new JSSDK("wx56acbf511aa96be5", "25d92ea2c176471b3b287a17c6537d56");
+$signPackage = $jssdk->GetSignPackage();
+?>
 <?
 /*require_once "./redis2.class.php";
 require_once "./user.class.php";
@@ -42,19 +48,37 @@ if ($sex2 == '男') {
     $redis->hset('user' . $objectOpenID, 'queueStatus', 2);
 }*/
 //}
-sleep(5);
-echo 'chokingwin';
+
 ?>
 
 <html>
 <head>
     <title>【系统提示】残忍断开中</title>
+    <meta charset='utf-8'>
 </head>
+
+<body>
+<input type="button" value="关闭本窗口" onclick="WeixinJSBridge.call('closeWindow');">
+</body>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js"></script>
 <script>
+    wx.config({
+        debug: false,
+        appId: '<?php echo $signPackage["appId"];?>',
+        timestamp: <?php echo $signPackage["timestamp"];?>,
+        nonceStr: '<?php echo $signPackage["nonceStr"];?>',
+        signature: '<?php echo $signPackage["signature"];?>',
+        jsApiList: [
+            // 所有要调用的 API 都要加到这个列表中
+            "closeWindow"
+        ]
+    });
+
     window.onload = function(){
-        self.close();
+        wx.closeWindow();
+        WeixinJSBridge.call('closeWindow');
     }
+
 </script>
-<body></body>
 </html>
 

@@ -6,7 +6,7 @@
 
 
 //此access_token使用时间仅为7200s,下次使用需要重新获取
-$access_token = "707QIykkD1Ok6PQyRIlst8j-4-N1fQbEJxxEIrDzPysAX-vdfJGRDZ4EJhFeKmZL8kdBD485UyqPfbQFFkw-R7rawBMRy5dJoKhy019GXnOFUnHHf91avB7JkozRQemPHDZiAHANJF";
+$access_token = "oNPeGPaqyRYj0KRIRH14WvxS3IGFIqII2yWkxbsJlAnM98S7Y-mJ-4F25NI6ks-ihqSzo6x0ilTrKgdDXAuJuDKggIVw9Oufq35oda2dKr72GyiknC_pfM2fE7FSKgNOXTPhAFAEAW";
 
 $jsonmenu = '
 {
@@ -16,13 +16,23 @@ $jsonmenu = '
             "sub_button": [
                 {
                     "type": "click", 
-                    "name": "发起匿名聊天", 
+                    "name": "发起聊天",
                     "key": "start"
                 }, 
                 {
                     "type": "click", 
                     "name": "断开聊天", 
                     "key": "end"
+                }
+            ]
+        },
+        {
+            "name":"锦囊",
+            "sub_button":[
+                {
+                    "type": "click",
+                    "name": "发起话题",
+                    "key": "topic"
                 }
             ]
         }

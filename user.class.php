@@ -10,7 +10,13 @@ class user
     //redis数据库操作对象
     private $redis = null;
 
-
+    private $topicArr = array(
+        '关于自己、人生或未来的一切真相，你想知道什么？',
+        '最近有什么电影看？',
+        '詹姆斯刚带领骑士拿到队史上首个总冠军。你怎么看？',
+        '欧洲杯你看吗?',
+        '到底是男生还是女生，比较色？'
+    );
     /**
      * 构造函数
      *
@@ -25,6 +31,27 @@ class user
         //连接redis数据库
         $this->redis = new MyRedis();
     }
+
+    /**
+     * 发送话题
+     * @param $OpenID
+     * @return mixed
+     */
+    public function sendTopic($OpenID){
+        $topicCur = $this->topicArr[array_rand( $this->topicArr , 1 )];
+        $content1 = "【系统消息】已向对方发起话题，和Ta一起聊聊吧。<br><br> 话题内容：$topicCur <br><br>";
+        $touser = $this->redis->hget('chat' . $OpenID, 'object');
+        $ret1 = $this->sendMsg($touser,'text',$content1);
+        $content2 = "【系统消息】对方向你发起话题，和Ta一起聊聊吧。<br><br> 话题内容：$topicCur <br><br>";
+        $ret2 = $this->sendMsg($OpenID,'text',$content2);
+        if($ret1 == 0 && $ret2 == 0){
+            return 0;
+        }else{
+            return 'error';
+        }
+
+    }
+
 
     /**
      *  通过客服接口转发信息

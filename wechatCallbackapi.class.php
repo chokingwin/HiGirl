@@ -152,6 +152,28 @@ class wechatCallbackapi
                     //$contentStr = "断开匹配操作中。。。";
                     //break;
 
+                    case "topic":
+                        $rst = $this->oneUser->checkUserReg2($object->FromUserName);
+                        if ($rst['code'] == 1001) {
+                            //未注册，需要先注册填写信息
+                            $contentStr = $rst['message'];
+                            $contentStr .= "<br>填写地址：";
+                            $contentStr .= "<a href=\"http://www.yzywnet.com/HiGirl/form.php?OpenID=" . $object->FromUserName . "\">注册您的信息</a>";
+                            break;
+                        } else {
+                            //已经注册，接着判断队列状态是否在 聊天队列。
+                            if ($rst['data']['queueStatus'] == 3) {
+                                $fromUsername = $object->FromUserName;
+                                $contentStr = $this->oneUser->sendTopic($fromUsername);
+
+                                break;
+                            } else {
+                                $contentStr = "【系统提示】<br>同学，先匹配，再开始聊天。";
+                                break;
+                            }
+                        }
+                        break;
+
                     default:
                         $contentStr[] = array("Title" => "你好同学",
                             "Description" => "微信匿名社交平台",
@@ -168,6 +190,9 @@ class wechatCallbackapi
         if (is_array($contentStr)) {
             $resultStr = $this->transmitNews($object, $contentStr);
         } else {
+            /*if ($contentStr != 0) {
+                $resultStr = $this->transmitText($object, $contentStr);
+            }*/
             $resultStr = $this->transmitText($object, $contentStr);
         }
         return $resultStr;

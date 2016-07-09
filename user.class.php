@@ -178,9 +178,9 @@ class user
         if ($objectOpenID == null) {
             //异性队列为空，暂时无法配对
             //加入本性队列排队
-            $name = $sex == '男' ? 'maleActive' : 'femaleActive';
+            //$name = $sex == '男' ? 'maleActive' : 'femaleActive';
             //return $name;
-            $this->redis->lpush($name, $OpenID);
+            //$this->redis->lpush($name, $OpenID);
             return $this->getArr('1014', '狼多肉少，请耐心等待，稍后再试。。');
         } else {
             //本性队列删除OpenID

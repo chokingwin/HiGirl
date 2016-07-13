@@ -193,7 +193,31 @@ class MyRedis{
        return $this->redis->expire($key,$time);
     }
 
+    public function psubscribe($patterns=array(),$callback){
+        $this->redis->psubscribe($patterns,$callback);
+    }
 
+    /*function psCallback($redis, $pattern, $chan, $msg){
+        echo "Pattern: $pattern\n";
+        echo "Channel: $chan\n";
+        echo "Payload: $msg\n";
+    }*/
+
+    public function setOption(){
+        $this->redis->setOption(Redis::OPT_READ_TIMEOUT,-1);
+    }
+
+    public function exists($key){
+        return $this->redis->exists($key);
+    }
+
+    public function llen($key){
+        return $this->redis->lLen($key);
+    }
+
+    public function lindex($key,$index){
+        return $this->redis->lIndex($key,$index);
+    }
        
 }// End Class
        

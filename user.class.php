@@ -101,6 +101,9 @@ class user
 
         }
         $result = $this->https_request($url, $data);
+        //更新两个chat键的过期时间
+        $this->redis->expire('chat' . $OpenID, 172200);
+        $this->redis->expire('chat' . $touser, 172200);
         return json_decode($result)->{'errcode'};
     }
 
@@ -178,9 +181,21 @@ class user
         if ($objectOpenID == null) {
             //异性队列为空，暂时无法配对
             //加入本性队列排队
-            //$name = $sex == '男' ? 'maleActive' : 'femaleActive';
+            $name = $sex == '男' ? 'maleActive' : 'femaleActive';
             //return $name;
-            //$this->redis->lpush($name, $OpenID);
+            $len = $this->redis->llen($name);
+            if($len == 0){
+                $this->redis->lpush($name, $OpenID);
+            }else{
+                for($i=0;$i<$len;$i++){
+                    if($this->redis->lindex($name,$i)==$OpenID){
+                        break;
+                    }else{
+                        $this->redis->lpush($name, $OpenID);
+                        break;
+                    }
+                }
+            }
             return $this->getArr('1014', '狼多肉少，请耐心等待，稍后再试。。');
         } else {
             //本性队列删除OpenID
@@ -190,6 +205,8 @@ class user
             //两个 OpenID 加入聊天表
             $ret1 = $this->redis->hset('chat' . $OpenID, 'object', $objectOpenID);
             $ret2 = $this->redis->hset('chat' . $objectOpenID, 'object', $OpenID);
+            $this->redis->expire('chat' . $OpenID, 172200);
+            $this->redis->expire('chat' . $objectOpenID, 172200);
             if ($ret1 && $ret2) {
                 //聊天表插入成功
                 //修改两个OpenID的队列状态
